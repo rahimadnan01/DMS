@@ -21,6 +21,9 @@ const userSchema = new mongoose.Schema(
       enum: ["Doctor", "Admin", "Patient"],
       required: true,
     },
+    refreshToken: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
