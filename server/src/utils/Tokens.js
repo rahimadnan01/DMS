@@ -3,7 +3,7 @@ import { ApiResponse } from "./ApiResponse.js";
 import { User } from "../models/User.model.js";
 import { wrapAsync } from "./wrapAsync.js";
 
-export const generateAccessAndRefreshToken = wrapAsync(async (userId) => {
+export const generateAccessAndRefreshToken = async (userId) => {
   try {
     const user = await User.findById(userId);
     if (!user) {
@@ -45,4 +45,4 @@ export const generateAccessAndRefreshToken = wrapAsync(async (userId) => {
   } catch (error) {
     throw new ApiError(error.status, error.message);
   }
-});
+};
