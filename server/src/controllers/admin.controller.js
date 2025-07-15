@@ -48,7 +48,6 @@ export const registerAdmin = wrapAsync(async (req, res) => {
 });
 
 export const loginAdmin = wrapAsync(async (req, res) => {
-
   const { email, password } = req.params;
   if (!email || !password) {
     throw new ApiError(401, "All fields are required");
@@ -100,4 +99,25 @@ export const loginAdmin = wrapAsync(async (req, res) => {
         refreshToken: refreshToken,
       })
     );
+});
+
+export const logoutAdmin = wrapAsync(async (req, res) => {
+  const loggedOutUser = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $unset: {
+        refreshToken: 1,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  let options = { httpOnly: true, secure: true };
+  res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, "User Logged out successfully", loggedOutUser));
 });
