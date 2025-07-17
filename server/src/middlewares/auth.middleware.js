@@ -9,11 +9,11 @@ export const verifyJwt = (role) =>
       const token =
         req.cookies.accessToken ||
         req.header("Authorization")?.replace("Bearer", "");
-      if (token) {
+      if (!token) {
         throw new ApiError(400, "Token not found : Invalid Credentials");
       }
 
-      const decodedToken = jwt.verify(token.process.env.ACCESS_TOKEN_KEY);
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
       if (!decodedToken) {
         throw new ApiError(500, "Failed to decode token");
       }

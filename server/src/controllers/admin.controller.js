@@ -1,12 +1,13 @@
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import { Admin, User } from "../models/Admin.model.js";
+import { Admin } from "../models/Admin.model.js";
+import { User } from "../models/User.model.js";
 import { wrapAsync } from "../utils/wrapAsync.js";
 import { generateAccessAndRefreshToken } from "../utils/Tokens.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 export const registerAdmin = wrapAsync(async (req, res) => {
-  let { username, email, password } = req.params;
+  let { username, email, password } = req.body;
   if (!username || !email || !password) {
     throw new ApiError(401, "All fields are required");
   }
@@ -48,7 +49,7 @@ export const registerAdmin = wrapAsync(async (req, res) => {
 });
 
 export const loginAdmin = wrapAsync(async (req, res) => {
-  const { email, password } = req.params;
+  const { email, password } = req.body;
   if (!email || !password) {
     throw new ApiError(401, "All fields are required");
   }
@@ -120,4 +121,61 @@ export const logoutAdmin = wrapAsync(async (req, res) => {
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, "User Logged out successfully", loggedOutUser));
+});
+
+export const updateAdmin = wrapAsync(async (req, res) => {
+  const { password, email } = req.body;
+  const { adminId } = req.params;
+  let userId = req.user._id;
+  console.log(adminId);
+  if (!adminId) {
+    throw new ApiError(404, "admin not Found User is Unauthorized");
+  }
+
+  let user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(404, "User not found User is unauthorized");
+  }
+
+  const duplicateEmail = await User.findOne({ email: email });
+  if (duplicateEmail) {
+    throw new ApiError(401, "User already exists of This Email");
+  }
+
+  if (email) user.email = email;
+  if (password) user.password = password;
+
+  const updatedUser = await user.save({ validateBeforeSave: false });
+  if (!updatedUser) {
+    throw new ApiError(500, "failed to update Admin");
+  }
+
+  const admin = await Admin.findOne({ user: adminId });
+  if (!admin) {
+    throw new ApiError(404, "Admin  not found");
+  }
+
+  const profilePicPath = req.files?.profilePic[0]?.path;
+  if (!profilePicPath) {
+    throw new ApiError(404, "Path for Profile pic is required");
+  }
+
+  let profilePicUrl;
+  if (profilePicPath) {
+    profilePicUrl = await uploadOnCloudinary(profilePicPath);
+  }
+
+  if (profilePicUrl) admin.profilePic = profilePicUrl.url;
+  let updatedAdmin = await admin.save();
+  if (!updatedAdmin) {
+    throw new ApiError(500, "Failed to update an Admin ");
+  }
+
+  res.json(
+    new ApiResponse(200, "Admin updated successfully", {
+      updatedAdmin: updatedAdmin,
+      updatedUser: updatedUser,
+    })
+  );
 });

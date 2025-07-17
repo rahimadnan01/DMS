@@ -9,7 +9,7 @@ export const generateAccessAndRefreshToken = async (userId) => {
     if (!user) {
       throw new ApiError(404, "User not Found");
     }
-    let accessToken = User.generateAccessToken();
+    let accessToken = user.generateAccessToken();
     if (!accessToken) {
       throw new ApiError(
         500,
@@ -17,7 +17,7 @@ export const generateAccessAndRefreshToken = async (userId) => {
       );
     }
 
-    let refreshToken = User.generateRefreshToken();
+    let refreshToken = user.generateRefreshToken();
     if (!refreshToken) {
       throw new ApiError(500, "Failed to Generate Refresh Token");
     }
