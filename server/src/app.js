@@ -20,8 +20,10 @@ export { app };
 // route declaration
 import adminAuthRoute from "./routes/auth/adminAuth.route.js";
 import adminRoute from "./routes/admin.route.js";
+import userRoute from "./routes/User.route.js";
 // route usage
 app.use("/api/v1", adminAuthRoute);
 app.use("/api/v1", adminRoute);
+app.use("/api/v1", userRoute);
 app.use(notFoundHandler);
 app.use(errorHandler);

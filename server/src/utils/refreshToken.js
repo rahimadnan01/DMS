@@ -16,7 +16,7 @@ export const refreshTokens = wrapAsync(async (req, res) => {
   let verifyToken;
 
   try {
-    verifyToken = jwt.verify(
+    verifyToken =  jwt.verify(
       upcomingRefreshToken,
       process.env.REFRESH_TOKEN_KEY
     );
