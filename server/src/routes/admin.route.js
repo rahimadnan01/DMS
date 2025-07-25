@@ -1,6 +1,6 @@
 import Router from "express";
 const router = Router();
-import { updateAdmin } from "../controllers/admin.controller.js";
+import { getAdmin, updateAdmin } from "../controllers/admin.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 router.route("/admin/:adminId/update").put(
@@ -13,5 +13,7 @@ router.route("/admin/:adminId/update").put(
   ]),
   updateAdmin
 );
+
+router.route("/admin").post(verifyJwt("admin"), getAdmin);
 
 export default router;

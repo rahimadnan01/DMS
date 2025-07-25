@@ -179,3 +179,22 @@ export const updateAdmin = wrapAsync(async (req, res) => {
     })
   );
 });
+
+export const getAdmin = wrapAsync(async (req, res) => {
+  const user = req.user;
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const admin = await Admin.findOne({ user: user._id });
+  if (!admin) {
+    throw new ApiError(404, "Admin not found");
+  }
+
+  res.json(
+    new ApiResponse(200, "Admin shown successfully", {
+      user: user,
+      admin: admin,
+    })
+  );
+});
