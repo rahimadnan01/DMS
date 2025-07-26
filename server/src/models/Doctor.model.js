@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 const doctorSchema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -15,6 +15,7 @@ const doctorSchema = new mongoose.Schema(
         "Pediatricians",
         "Neurologist",
         "Gastroenterologist",
+        "",
       ],
       required: true,
     },
@@ -39,7 +40,7 @@ const doctorSchema = new mongoose.Schema(
       required: true,
     },
     About: {
-      type: Required,
+      type: String,
       maxLength: 150,
       required: true,
     },

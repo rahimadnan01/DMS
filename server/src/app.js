@@ -21,9 +21,13 @@ export { app };
 import adminAuthRoute from "./routes/auth/adminAuth.route.js";
 import adminRoute from "./routes/admin.route.js";
 import userRoute from "./routes/User.route.js";
+import doctorAuthRoute from "./routes/auth/doctorAuth.route.js";
+import doctorRoute from "./routes/doctor.route.js";
 // route usage
 app.use("/api/v1", adminAuthRoute);
 app.use("/api/v1", adminRoute);
 app.use("/api/v1", userRoute);
+app.use("/api/v1", doctorAuthRoute);
+app.use("/api/v1", doctorRoute);
 app.use(notFoundHandler);
 app.use(errorHandler);

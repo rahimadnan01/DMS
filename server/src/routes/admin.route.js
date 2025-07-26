@@ -8,7 +8,7 @@ import {
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 router.route("/admin/:adminId/update").put(
-  verifyJwt(),
+  verifyJwt("admin"),
   upload.fields([
     {
       name: "profilePic",
@@ -18,5 +18,5 @@ router.route("/admin/:adminId/update").put(
   updateAdmin
 );
 router.route("/admin").post(verifyJwt("admin"), getAdmin);
-router.route("/admin/:adminId/delete").delete(deleteAdmin);
+router.route("/admin/:adminId/delete").delete(verifyJwt("admin"), deleteAdmin);
 export default router;
