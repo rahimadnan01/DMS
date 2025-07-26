@@ -1,6 +1,10 @@
 import Router from "express";
 const router = Router();
-import { getAdmin, updateAdmin } from "../controllers/admin.controller.js";
+import {
+  deleteAdmin,
+  getAdmin,
+  updateAdmin,
+} from "../controllers/admin.controller.js";
 import { verifyJwt } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 router.route("/admin/:adminId/update").put(
@@ -13,7 +17,6 @@ router.route("/admin/:adminId/update").put(
   ]),
   updateAdmin
 );
-
 router.route("/admin").post(verifyJwt("admin"), getAdmin);
-
+router.route("/admin/:adminId/delete").delete(deleteAdmin);
 export default router;

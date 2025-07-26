@@ -172,7 +172,7 @@ export const updateAdmin = wrapAsync(async (req, res) => {
     throw new ApiError(500, "Failed to update an Admin ");
   }
 
-  res.json(
+  res.status(200).json(
     new ApiResponse(200, "Admin updated successfully", {
       updatedAdmin: updatedAdmin,
       updatedUser: updatedUser,
@@ -191,10 +191,37 @@ export const getAdmin = wrapAsync(async (req, res) => {
     throw new ApiError(404, "Admin not found");
   }
 
-  res.json(
+  res.status(200).json(
     new ApiResponse(200, "Admin shown successfully", {
       user: user,
       admin: admin,
+    })
+  );
+});
+
+export const deleteAdmin = wrapAsync(async (req, res) => {
+  const { adminId } = req.params;
+  if (!adminId) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const admin = await Admin.findOne({ user: adminId });
+  if (!admin) {
+    throw new ApiError(404, "Admin not found of this Id");
+  }
+  const deletedUser = await User.findOneAndDelete({ _id: adminId });
+  if (!deletedUser) {
+    throw new ApiError(500, "Failed to delete an User");
+  }
+  const deletedAdmin = await Admin.findOneAndDelete({ _id: admin._id });
+  if (!deletedAdmin) {
+    throw new ApiError(500, "Failed to delete an Admin");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Admin deleted successfully", {
+      deletedUser: deletedUser,
+      deletedAdmin: deletedAdmin,
     })
   );
 });
