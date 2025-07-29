@@ -123,3 +123,26 @@ export const logoutPatient = wrapAsync(async (req, res) => {
     .json(new ApiResponse(200, "User Logged out successfully", loggedOutUser));
 });
 
+export const getOnePatient = wrapAsync(async (req, res) => {
+  const { patientId } = req.params;
+  if (!patientId) {
+    throw new ApiError(401, "Patient not found of this Id");
+  }
+
+  const user = await User.findById(patientId);
+  if (!user) {
+    throw new ApiError(404, "User not found");
+  }
+
+  const patient = await Patient.findOne({ user: user._id });
+  if (!patient) {
+    throw new ApiError(500, "Failed to get Patient");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Patient shown successfully", {
+      user: user,
+      patient: patient,
+    })
+  );
+});

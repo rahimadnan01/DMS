@@ -24,6 +24,7 @@ import userRoute from "./routes/User.route.js";
 import doctorAuthRoute from "./routes/auth/doctorAuth.route.js";
 import doctorRoute from "./routes/doctor.route.js";
 import patientAuthRoute from "./routes/auth/patientAuth.route.js";
+import patientRoute from "./routes/patient.route.js";
 // route usage
 app.use("/api/v1", adminAuthRoute);
 app.use("/api/v1", adminRoute);
@@ -31,5 +32,6 @@ app.use("/api/v1", userRoute);
 app.use("/api/v1", doctorAuthRoute);
 app.use("/api/v1", doctorRoute);
 app.use("/api/v1", patientAuthRoute);
+app.use("/api/v1", patientRoute);
 app.use(notFoundHandler);
 app.use(errorHandler);
