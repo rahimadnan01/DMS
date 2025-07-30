@@ -162,7 +162,7 @@ export const logoutDoctor = wrapAsync(async (req, res) => {
     .clearCookie("refreshToken", options)
     .json(new ApiResponse(200, "User Logged out successfully", loggedOutUser));
 });
-// ! FIX:also delete user on deleting the doctor and same in delete all doctors controller
+
 export const deleteDoctor = wrapAsync(async (req, res) => {
   const { doctorId } = req.params;
   if (!doctorId) {
@@ -177,7 +177,7 @@ export const deleteDoctor = wrapAsync(async (req, res) => {
   if (!deletedUser) {
     throw new ApiError(500, "Failed to delete an User");
   }
-  const deletedDoctor = await Doctor.findOneAndDelete({ _id: doctor._id });
+  const deletedDoctor = await Doctor.findByIdAndDelete(doctor._id);
   if (!deletedDoctor) {
     throw new ApiError(500, "Failed to delete a Doctor");
   }
@@ -236,8 +236,12 @@ export const getAllDoctors = wrapAsync(async (req, res) => {
 
 export const deleteAllDoctors = wrapAsync(async (req, res) => {
   const allDeletedDoctors = await Doctor.deleteMany({});
+  const allDeletedUsers = await User.deleteMany({ role: "doctor" });
   if (deleteAllDoctors < 0) {
     throw new ApiError(401, "No doctors found to delete");
+  }
+  if (!allDeletedUsers) {
+    throw new ApiError(500, "Failed to delete all users having role doctors");
   }
   res
     .status(200)

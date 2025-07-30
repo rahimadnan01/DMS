@@ -146,3 +146,71 @@ export const getOnePatient = wrapAsync(async (req, res) => {
     })
   );
 });
+
+export const getAllPatients = wrapAsync(async (req, res) => {
+  const allPatients = await Patient.aggregate([
+    {
+      $lookup: {
+        from: "users",
+        localField: "user",
+        foreignField: "_id",
+        as: "userInfo",
+      },
+    },
+    {
+      $unwind: "$userInfo",
+    },
+  ]);
+
+  if (!allPatients) {
+    throw new ApiError(404, "No patients found");
+  }
+
+  res
+    .status(200)
+    .json(new ApiResponse(200, "All patients shown successfully", allPatients));
+});
+
+export const deleteOnePatient = wrapAsync(async (req, res) => {
+  const { patientId } = req.params;
+  if (!patientId) {
+    throw new ApiError(401, "Patient Id must required to delete Patient");
+  }
+
+  const deletedPatient = await Patient.findOneAndDelete({ user: patientId });
+  if (!deletedPatient) {
+    throw new ApiError(500, "Failed to delete Patient");
+  }
+
+  const deletedUser = await User.findOneAndDelete({ _id: patientId });
+  if (!deletedUser) {
+    throw new ApiError(500, "Failed to delete a user patient");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, "Patient deleted successfully", {
+      deletedUser: deletedUser,
+      deletedPatient: deletedPatient,
+    })
+  );
+});
+
+export const deleteAllPatients = wrapAsync(async (req, res) => {
+  const allDeletedPatients = await Patient.deleteMany({});
+  if (!allDeletedPatients) {
+    throw new ApiError(404, "No patients Found to delete");
+  }
+
+  const allDeletedUsers = await User.deleteMany({ role: "patient" });
+  if (!allDeletedUsers) {
+    throw new ApiError(
+      500,
+      "failed to delete all users containing role Patient"
+    );
+  }
+
+  res.status(200).json(200, "All patients deleted successfully", {
+    allDeletedPatient: allDeletedPatients,
+    allDeletedUsers: allDeletedUsers,
+  });
+});
